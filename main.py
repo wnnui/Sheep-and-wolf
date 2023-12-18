@@ -165,42 +165,41 @@ killed_enemies = 0
 killed_score = 0
 #enemy class 
 class Enemy(pygame.sprite.Sprite):
-    score = 0  # Make score a class attribute
+    score = 0  # Score als Klassenattribute machen
     killed_enemies = 0  
-    current_image_index = 0  # Add this line
+    current_image_index = 0  # diese Zeile hinzufügen
 
     def __init__(self, waypoints):
         pygame.sprite.Sprite.__init__(self)
         self.images = [pygame.image.load('img/wolf1.png'), pygame.image.load('img/wolf2.png'), pygame.image.load('img/wolf3.png'), pygame.image.load('img/wolf4.png')]
-        self.image = pygame.transform.scale(self.images[Enemy.current_image_index], (30, 30))  # Scale the image to be 30x30 pixels
-
+        self.image = pygame.transform.scale(self.images[Enemy.current_image_index], (30, 30))  # Skaliert das Bild auf 30x30 Pixel
         
         self.rect = self.image.get_rect()
-        self.rect.center = waypoints[0]  # Start at the first waypoint
+        self.rect.center = waypoints[0]  # Start am ersten waypoint
         self.speed = 5
 
         self.waypoints = waypoints
         self.current_waypoint = 0
-        self.enemy_health = 1  # Add this line
+        self.enemy_health = 1  # Diese Zeile hinzufügen
         self.last_image_change = pygame.time.get_ticks()
 
     def update(self):
-        # Calculate the direction to the next waypoint
-        global health  # Declare health as a global variable
+        # Berechne die Richtung zum nächsten waypoint
+        global health  # health als globale Variable deklarieren
         
         dx, dy = self.waypoints[self.current_waypoint][0] - self.rect.x, self.waypoints[self.current_waypoint][1] - self.rect.y
         distance = math.sqrt(dx**2 + dy**2)
-        if distance < self.speed:  # If the enemy is close to the waypoint, move on to the next one
+        if distance < self.speed:  # Wenn der Feind nahe am Wegpunkt ist, zum nächsten gehen
             self.current_waypoint += 1
-            if self.current_waypoint >= len(self.waypoints):  # If there are no more waypoints, stop the enemy
+            if self.current_waypoint >= len(self.waypoints):  # Wenn der Feind nahe am Wegpunkt ist, zum nächsten gehen
                 self.current_waypoint = 0
-        else:  # If the enemy is not close to the waypoint, move towards it
+        else:  # Wenn der Feind nicht nahe am Wegpunkt ist, bewege dich darauf zu
             self.rect.x += dx / distance * self.speed
             self.rect.y += dy / distance * self.speed
         
         if self.enemy_health == 0:
             self.kill()
-            Enemy.killed_enemies += 1  # Increment the count of killed enemies
+            Enemy.killed_enemies += 1  # Erhöht die Anzahl der getöteten Feinde
             if Enemy.killed_enemies % 20 == 0:
                 Enemy.current_image_index = (Enemy.current_image_index + 1) % len(self.images)
                 
