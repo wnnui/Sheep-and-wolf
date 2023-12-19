@@ -66,6 +66,26 @@ def draw_score():
     # den score auf dem bildenschirm zeigen
     screen.blit(score_text, score_pos)
 
+#Wegpunkte, die die Feine überqueren müssen
+waypoints = [
+    (525, 50),(525, 125),
+    (525, 125),(50, 125),
+    (50, 205),(490, 205),
+    (490, 325),(160, 325),
+    (160, 360),(120, 360),
+    (120, 480),(570, 480),
+    (570, 560),(0, 560)
+]
+
+# Erstellung von Sprite-Gruppen
+all_sprites = pygame.sprite.Group()
+enemies = pygame.sprite.Group()
+towers = pygame.sprite.Group()
+bullets = pygame.sprite.Group()
+
+#Startbutton definieren
+button = Button('start.png', WIDTH - MENU_WIDTH + 50, 50, 100, 50, '')
+
 #sound und image des intro , press , damit das spiel anfangen kann
 
 def show_intro_screen():
@@ -274,23 +294,6 @@ class Button:
             if self.y < pos[1] < self.y + self.height:
                 return True
         return False
-
-# Erstellung von Sprite-Gruppen
-all_sprites = pygame.sprite.Group()
-enemies = pygame.sprite.Group()
-towers = pygame.sprite.Group()
-bullets = pygame.sprite.Group()
-
-# 1 block size = 40
-waypoints = [
-    (525, 50),(525, 125),
-    (525, 125),(50, 125),
-    (50, 205),(490, 205),
-    (490, 325),(160, 325),
-    (160, 360),(120, 360),
-    (120, 480),(570, 480),
-    (570, 560),(0, 560)
-]
 
 
 button = Button('start.png', WIDTH - MENU_WIDTH + 50, 50, 100, 50, '')
