@@ -38,6 +38,7 @@ img_folder = os.path.join(game_folder, 'img')
 
 # screen erstellen
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
+pygame.display.set_caption("sheep Defender")
 
 # hintergrund bild wird geladen
 background = pygame.image.load(os.path.join(img_folder, 'background.png')).convert()
@@ -237,6 +238,7 @@ def show_end_screen():
     font = pygame.font.Font(None, 36)
     text = font.render("Game Over!! You Suck!!", True, (255, 0, 0))#erstellt den Text mit roter Farbe.
     screen.blit(text, (230, 570))# Position des Textes auf dem Bildschirm.
+
 
 
     pygame.display.flip()#bildschirm aktuliesrieren
