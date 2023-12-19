@@ -185,7 +185,7 @@ class Enemy(pygame.sprite.Sprite):
         
         self.rect = self.image.get_rect()
         self.rect.center = waypoints[0]  # Start am ersten waypoint
-        self.speed = 10
+        self.speed = 5
 
         self.waypoints = waypoints
         self.current_waypoint = 0
