@@ -376,9 +376,9 @@ while running:
 
     all_sprites.draw(screen) # Alle Spielobjekte zeichnen
     #menu_background = pygame.Surface((MENU_WIDTH, HEIGHT))
-    #menu_background.fill((128, 128, 128))  # Fill with gray color
+    #menu_background.fill((128, 128, 128))  
 
-    # Draw the menu background onto the screen
+    
     #screen.blit(menu_background, (GAME_WIDTH, 0))
     
 
