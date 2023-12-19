@@ -202,7 +202,7 @@ class Enemy(pygame.sprite.Sprite):
     def __init__(self, waypoints):
         pygame.sprite.Sprite.__init__(self)
         self.images = [pygame.image.load('img/wolf1.png'), pygame.image.load('img/wolf2.png'), pygame.image.load('img/wolf3.png'), pygame.image.load('img/wolf4.png')]
-        self.image = pygame.transform.scale(self.images[Enemy.current_image_index], (30, 30))  # Skaliert das Bild auf 30x30 Pixel
+        self.image = pygame.transform.scale(self.images[Enemy.current_image_index], (50, 50))  # Skaliert das Bild auf 30x30 Pixel
         
         self.rect = self.image.get_rect()
         self.rect.center = waypoints[0]  # Start am ersten waypoint
