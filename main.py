@@ -3,7 +3,7 @@ import pygame
 import os
 import threading
 
-#pygame insatllieren
+#pygame installieren
 pygame.init()
 #Soundeffekte werden geladen und ein Bild für den Game-Over-Screen wird geladen.
 pygame.mixer.init()
@@ -51,23 +51,18 @@ def draw_score():
     score_bg_color = (0, 0, 0)  # Hintergrundfarbe (score), schwarz
     score_font_size = 36
     score_pos = (650, 150)  # Position des Scores auf dem Bildschirm
-
     #  die Standard-Pygame-Schriftart wird verwendet
     score_font = pygame.font.Font(None, score_font_size)
-
     # Rendering des Scores
     score_text = score_font.render(f"Score: {Enemy.score}", True, score_color)
-
     #rect wird erstellt
     score_area = pygame.Rect(score_pos, score_text.get_size())
-
     # den rect als Hintergrund für den Score
     pygame.draw.rect(screen, score_bg_color, score_area)
-
     # Score auf dem Bildschirm anzeigen
     screen.blit(score_text, score_pos)
 
-#Wegpunkte, die die Feine überqueren müssen
+#Wegpunkte, die die Feinde überqueren müssen
 waypoints = [
     (525, 50),(525, 125),
     (525, 125),(50, 125),
@@ -107,7 +102,9 @@ def show_intro_screen():
     #Der gerenderte Text wird auf dem Bildschirm angezeigt
     screen.blit(text, (230,530))#Position des Satzes 
     pygame.display.flip()
-    #Wenn der Anwender eine Taste drückt oder auf die Maus klickt, wird der Startbildschirm beendet und geht zum nächsten Teil des Spiels über. Beim Schließen des Fensters wird das Spiel beendet. Das wird mit der folgenden while-Schleife realisiert:
+    #Wenn der Anwender eine Taste drückt oder auf die Maus klickt, wird der Startbildschirm beendet 
+    #und geht zum nächsten Teil des Spiels über. Beim Schließen des Fensters wird das Spiel beendet.
+    #Das wird mit der folgenden while-Schleife realisiert:
 
     while True:
         for event in pygame.event.get():
@@ -155,11 +152,12 @@ class Bullet(pygame.sprite.Sprite):
 class Tower(pygame.sprite.Sprite):
     def __init__(self, pos):
         pygame.sprite.Sprite.__init__(self)
-        self.frames = [pygame.transform.scale(pygame.image.load(os.path.join(img_folder, f'tower{i}.png')).convert_alpha(), (70, 70)) for i in range(6)]
+        self.frames = [pygame.transform.scale(pygame.image.load(os.path.join(img_folder, f'tower{i}.png')).convert_alpha(), 
+                                              (70, 70)) for i in range(6)]
         self.current_frame = 0 # Frame wird auf 0 gesetzt, um das erste Bild der Animation zu repräsentieren.
         self.image = self.frames[self.current_frame]
         self.rect = self.image.get_rect()
-        self.rect.center = pos# Platzierung der hunter 
+        self.rect.center = pos# Platzierung der Hunter 
         self.range = 100 #Reichweite für den Hunter um die Enemies zu erkennen
         self.last_anim = pygame.time.get_ticks()
         self.anim_delay = 100
@@ -167,7 +165,8 @@ class Tower(pygame.sprite.Sprite):
 
     def update(self):
         #Enemy wird in der range des Hunters gesucht
-        target = next((enemy for enemy in enemies if math.hypot(self.rect.centerx - enemy.rect.centerx, self.rect.centery - enemy.rect.centery) <= self.range), None)
+        target = next((enemy for enemy in enemies if math.hypot(self.rect.centerx - enemy.rect.centerx, 
+                                                                self.rect.centery - enemy.rect.centery) <= self.range), None)
 
         if target is not None:
             #Zeit wird aktualisiert wenn ein Enemy in der range eines Hunters gefunden wurde
@@ -186,7 +185,8 @@ class Tower(pygame.sprite.Sprite):
                     all_sprites.add(bullet)
                     self.current_frame = (self.current_frame + 1) % 6  # Aktualisiert den aktuellen Frame  um 1 weiter.
                     self.image = self.frames[self.current_frame]#Aktualisiert das Bild des Objekts auf den neuen Frame.
-                    self.last_anim = pygame.time.get_ticks()  # Setzt den Verzögerungstimer zurück, um die Zeit seit der letzten Animation zu speichern.
+                    self.last_anim = pygame.time.get_ticks()  # Setzt den Verzögerungstimer zurück, um die Zeit seit der letzten 
+                                                                #Animation zu speichern.
                 
 
 #Enemy class 
@@ -287,7 +287,8 @@ class Button:
         if self.text != '':
             font = pygame.font.SysFont('comicsans', 50)
             text = font.render(self.text, 1, (0,0,0))
-            screen.blit(text, (self.x + (self.width/2 - text.get_width()/2), self.y + (self.height/2 - text.get_height()/2)))#Text in der Mitte des Buttons platzieren
+            screen.blit(text, (self.x + (self.width/2 - text.get_width()/2), self.y + (self.height/2 - text.get_height()/2)))
+            #Text in der Mitte des Buttons platzieren
             
     def clicked(self, pos):
         #  prüfen, ob die Mausposition innerhalb der Begrenzungen des Buttons lieg
@@ -313,7 +314,8 @@ enemies_created = False
 last_enemy_creation_time = 0
 score_font = pygame.font.Font(None, 36)
 
-# Hier werden die Variablen für die Anzahl der platzierten hunters (towers_placed) und die Anzahl der Credits (credits) initialisiert.
+# Hier werden die Variablen für die Anzahl der platzierten hunters 
+#(towers_placed) und die Anzahl der Credits (credits) initialisiert.
 towers_placed = 0
 credits = 0  # Start mit 0 credits
 font = pygame.font.Font(None, 36)
@@ -324,12 +326,8 @@ pygame.mixer.music.play(-1)  #Musik wird unendlich wiederholt
 
 while running:
     
-  
-
     pygame.time.Clock().tick(FPS)
    
-    
-
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
@@ -337,7 +335,7 @@ while running:
             if button.clicked(pygame.mouse.get_pos()):
                 game_started = True
             elif game_started and event.button == 1:  # Erlaubt nur das Platzieren von Türmen, wenn das Spiel gestartet wurde und die linke Maustaste geklickt wurde
-                if towers_placed < 2 or credits >= 5:
+                if towers_placed < 2 or credits >= 5:                       
                     mouse_pos = pygame.mouse.get_pos()
                     tower = Tower(mouse_pos)
                     all_sprites.add(tower)
@@ -370,25 +368,16 @@ while running:
                     last_enemy_creation_time = current_time #Aktualisiert den Zeitpunkt der letzten Feinderstellung
             
     MENU_WIDTH = 200  # Breite des panel
-
-
     # Update
     all_sprites.update()
-
     # Draw 
     screen.blit(background, (0, 0))
-
     all_sprites.draw(screen) # Alle Spielobjekte zeichnen
     #menu_background = pygame.Surface((MENU_WIDTH, HEIGHT))
     #menu_background.fill((128, 128, 128))  
 
     
     #screen.blit(menu_background, (GAME_WIDTH, 0))
-    
-
-
-    
-    
     # zeichne die button
     button.draw(screen)
 
@@ -396,7 +385,6 @@ while running:
         countdown_text = font.render(str(int(countdown)), True, (255, 255, 255))  #  Erstelle eine Oberfläche mit dem Countdown
         screen.blit(countdown_text, ((WIDTH - countdown_text.get_width()) // 2, (HEIGHT - countdown_text.get_height()) // 2))  
         # Zeichne den Countdown in der Mitte des Bildschirms
-
     draw_score()  # Score anzeigen
     text = font.render(f"Credits: {credits}", True, (255, 255, 255))
     screen.blit(text, (640, 210))#  Zeichne den Text "Credits" auf den Bildschirm
