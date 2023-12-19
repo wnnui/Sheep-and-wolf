@@ -84,7 +84,7 @@ towers = pygame.sprite.Group()
 bullets = pygame.sprite.Group()
 
 #Startbutton definieren
-button = Button('start.png', WIDTH - MENU_WIDTH + 50, 50, 100, 50, '')
+#button = Button('start.png', WIDTH - MENU_WIDTH + 50, 50, 100, 50, '')
 
 #sound und image des intro , press , damit das spiel anfangen kann
 
