@@ -5,7 +5,7 @@ import threading
 
 #pygame insatllieren
 pygame.init()
-#Soundeffekte werden geladen und ein Bild für das Game-Over-Screen wird geladen.
+#Soundeffekte werden geladen und ein Bild für den Game-Over-Screen wird geladen.
 pygame.mixer.init()
 enemy_move_sound = pygame.mixer.Sound('sound/enemy_move.mp3')
 sound = pygame.mixer.Sound('sound/shoot.mp3')
@@ -14,56 +14,57 @@ sound.set_volume(0.5)  # 50% volumen
 #game over bild wird geladen 
 game_over_image = pygame.image.load('img/wolfwin.jpg')
 
-# Attribute für die Anzeige der score werden definiert
-score_color = (255, 255, 255)  # weiße farbe für score
-score_start_size = 36 # schrifft größe am anfang
-score_end_size = 48 # scheifft größe am ende 
+# Attribute für die Anzeige des Scores werden definiert
+score_color = (255, 255, 255)  # weiße farbe für den Score
+score_start_size = 36 #Schriftgröße am Anfang
+score_end_size = 48 # #Schriftgröße am Ende 
 score_duration = 0.5  # Dauer der Animation in Sekunden
 
-# attribute des scores
+# Score-Attribute
 score_size = score_start_size
 score_time = 0
 
-#screen größen 
+#Bildschirmgröße
 WIDTH, HEIGHT = 800, 600
-#menü breite
+#Größe des Menüs
 GAME_WIDTH = WIDTH - 200  
 MENU_WIDTH = 200
 health = 100
 FPS = 60
 
-# erleichtert den späteren zugriff auf die images 
+# Erleichtert den späteren zugriff auf die images 
 game_folder = os.path.dirname(__file__)
 img_folder = os.path.join(game_folder, 'img')
 
-# screen erstellen
+# Screen erstellen
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("sheep Defender")
 
-# hintergrund bild wird geladen
+# Hintergrund bild wird geladen
 background = pygame.image.load(os.path.join(img_folder, 'background.png')).convert()
 background = pygame.transform.scale(background, (GAME_WIDTH, HEIGHT))  # maße werden angepasst 
 gray_background = pygame.Surface((MENU_WIDTH, HEIGHT))  
+
 def draw_score():
     # Definiere die Attribute für die Anzeige des Punktestands
-    score_color = (255, 255, 255)  # weiße farbe für das text 
-    score_bg_color = (0, 0, 0)  # hintergrunds Farbe für das Text (score), schwarz
+    score_color = (255, 255, 255)  # Farbe für die Score-Schriftfarbe
+    score_bg_color = (0, 0, 0)  # Hintergrundfarbe (score), schwarz
     score_font_size = 36
-    score_pos = (650, 150)  # position der score auf der bildschirm 
+    score_pos = (650, 150)  # Position des Scores auf dem Bildschirm
 
     #  die Standard-Pygame-Schriftart wird verwendet
     score_font = pygame.font.Font(None, score_font_size)
 
-    # score wort wird gerendert 
+    # Rendering des Scores
     score_text = score_font.render(f"Score: {Enemy.score}", True, score_color)
 
     #rect wird erstellt
     score_area = pygame.Rect(score_pos, score_text.get_size())
 
-    # den rect als hintergrund für die score
+    # den rect als Hintergrund für den Score
     pygame.draw.rect(screen, score_bg_color, score_area)
 
-    # den score auf dem bildenschirm zeigen
+    # Score auf dem Bildschirm anzeigen
     screen.blit(score_text, score_pos)
 
 #Wegpunkte, die die Feine überqueren müssen
@@ -77,21 +78,22 @@ waypoints = [
     (570, 560),(0, 560)
 ]
 
+#Spiel Variablen 
+enemies_reached_end = 0
+killed_enemies = 0
+killed_score = 0
+
 # Erstellung von Sprite-Gruppen
 all_sprites = pygame.sprite.Group()
 enemies = pygame.sprite.Group()
 towers = pygame.sprite.Group()
 bullets = pygame.sprite.Group()
 
-#Startbutton definieren
-button = Button('start.png', WIDTH - MENU_WIDTH + 50, 50, 100, 50, '')
-
 #sound und image des intro , press , damit das spiel anfangen kann
-
 def show_intro_screen():
     #Hier wird der Sound für die Einführungsmusik geladen
     pygame.mixer.music.load('sound/intro.mp3')
-# der sound wird unendlcih geladen , bis es getoppt wird (-1)
+# der Sound wird unendlich geladen , bis er gestoppt wird (-1)
     pygame.mixer.music.play(-1)  
 #Der gesamte Bildschirm wird mit schwarzer Farbe gefüllt, um eine klare Leinwand für den Einführungsbildschirm zu schaffen.
     screen.fill((0, 0, 0))  
@@ -101,13 +103,10 @@ def show_intro_screen():
 
     font = pygame.font.Font(None, 36) 
     text = font.render("Press any key or click to start", True, (255, 255, 255))
-    #Der gerenderte Text wird auf den Bildschirm gezeigt
-    screen.blit(text, (230,530))#postion des satzes 
+    #Der gerenderte Text wird auf dem Bildschirm angezeigt
+    screen.blit(text, (230,530))#Position des Satzes 
     pygame.display.flip()
     #Wenn der Anwender eine Taste drückt oder auf die Maus klickt, wird der Startbildschirm beendet und geht zum nächsten Teil des Spiels über. Beim Schließen des Fensters wird das Spiel beendet. Das wird mit der folgenden while-Schleife realisiert:
-
-
-
 
     while True:
         for event in pygame.event.get():
@@ -117,7 +116,7 @@ def show_intro_screen():
             elif event.type == pygame.KEYUP or event.type == pygame.MOUSEBUTTONUP:
                 return
 
-#schüsse der Hunter , sind Rot aus der Hunter Waffe
+#Schüsse der Hunter 
 class Bullet(pygame.sprite.Sprite):
     #Zuerst werden die Attribute definiert. Wir haben uns für rote Projektile entschieden. 
     #Bei den Attributen werden auch die Startposition, das Ziel und die Geschwindigkeit angegeben.
@@ -128,10 +127,10 @@ class Bullet(pygame.sprite.Sprite):
         self.image.fill((255, 0, 0))  
         self.rect = self.image.get_rect(center=start_pos)
         self.target = target
-        self.speed = 15  # Geschwindigkeit der enemies anpassbar
+        self.speed = 15  # Geschwindigkeit der Enemies anpassbar
 
         
-        #Wölfe in der Range der hunter werden attakiert 
+        #Enemies in der Range der hunter werden attakiert 
         dx, dy = self.target.rect.centerx - self.rect.centerx, self.target.rect.centery - self.rect.centery
         dist = math.hypot(dx, dy)
         self.dx, self.dy = dx / dist, dy / dist   
@@ -141,7 +140,7 @@ class Bullet(pygame.sprite.Sprite):
          # hier  wird die Position des Projektils basierend auf der Geschwindigkeit und der Richtung aktualisiert.
         self.pos[0] += self.dx * self.speed
         self.pos[1] += self.dy * self.speed
-        self.rect.center = self.pos  # Update the rect
+        self.rect.center = self.pos  
 
         # Danach wird überprüft, ob der Gegner getroffen wird. Wenn ja, wird die Gesundheit des Gegners um 1 Punkt verringert und das Projektil verschwindet mit der Methode self.kill(), wenn es einen Gegner getroffen hat.
 
@@ -156,29 +155,29 @@ class Tower(pygame.sprite.Sprite):
     def __init__(self, pos):
         pygame.sprite.Sprite.__init__(self)
         self.frames = [pygame.transform.scale(pygame.image.load(os.path.join(img_folder, f'tower{i}.png')).convert_alpha(), (70, 70)) for i in range(6)]
-        self.current_frame = 0 # frame wird auf 0 gesetzt, um das erste Bild der Animation zu repräsentieren.
+        self.current_frame = 0 # Frame wird auf 0 gesetzt, um das erste Bild der Animation zu repräsentieren.
         self.image = self.frames[self.current_frame]
         self.rect = self.image.get_rect()
-        self.rect.center = pos# plazierung der hunter 
-        self.range = 100 #reichweite für das hunter um due enmy (wölfe) zu erkennen
+        self.rect.center = pos# Platzierung der hunter 
+        self.range = 100 #Reichweite für den Hunter um die Enemies zu erkennen
         self.last_anim = pygame.time.get_ticks()
         self.anim_delay = 100
         self.shoot_delay = 500  
 
     def update(self):
-        #enemy wird in der range des hunter gesucht
+        #Enemy wird in der range des Hunters gesucht
         target = next((enemy for enemy in enemies if math.hypot(self.rect.centerx - enemy.rect.centerx, self.rect.centery - enemy.rect.centery) <= self.range), None)
 
         if target is not None:
-            #zeit wird aktulisiert wenn ein enemy in der range eines hunters gefunden würde
+            #Zeit wird aktualisiert wenn ein Enemy in der range eines Hunters gefunden wurde
             now = pygame.time.get_ticks()
-            #Überprüft, ob genügend Zeit seit der letzten Animation vergangen ist, basierend auf der Animationsverzögerung des hunters.
+            #Überprüft, ob genügend Zeit seit der letzten Animation vergangen ist, basierend auf der Animationsverzögerung des Hunters.
             if now - self.last_anim >= self.anim_delay:
                 self.current_frame = (self.current_frame + 1) % 6
                 self.image = self.frames[self.current_frame]
                 self.last_anim = now
 
-                if self.current_frame == 3:# Überprüft, ob der aktuelle Frame den Wert 3 hat, damit die sound der schüsss gespielt wird 
+                if self.current_frame == 3:# Überprüft, ob der aktuelle Frame den Wert 3 hat, damit der Schuss-Ton gespielt wird
                     sound.play()
 
                     bullet = Bullet(self.rect.center, target)
@@ -188,12 +187,8 @@ class Tower(pygame.sprite.Sprite):
                     self.image = self.frames[self.current_frame]#Aktualisiert das Bild des Objekts auf den neuen Frame.
                     self.last_anim = pygame.time.get_ticks()  # Setzt den Verzögerungstimer zurück, um die Zeit seit der letzten Animation zu speichern.
                 
-            
-#spiel Variabelen 
-enemies_reached_end = 0
-killed_enemies = 0
-killed_score = 0
-#enemy class 
+
+#Enemy class 
 class Enemy(pygame.sprite.Sprite):
     score = 0  
     killed_enemies = 0  
@@ -214,22 +209,22 @@ class Enemy(pygame.sprite.Sprite):
         self.last_image_change = pygame.time.get_ticks()
 
     def update(self):
-        # Berechne die Richtung zum nächsten waypoint
-        global health  # health als globale Variable deklarieren
+        # Berechne die Richtung zum nächsten Waypoint
+        global health  # Health als globale Variable deklarieren
         #  Differenz in den x- und y-Koordinaten zwischen dem aktuellen Ort des enmeys und dem nächsten Waypoint berechnen
         dx, dy = self.waypoints[self.current_waypoint][0] - self.rect.x, self.waypoints[self.current_waypoint][1] - self.rect.y
         distance = math.sqrt(dx**2 + dy**2)# die Entfernung zum nächsten Waypoint mit dem Satz des Pythagoras wird hier berechnet 
-        if distance < self.speed:  # Wenn der enemy  nahe am Wegpunkt ist, zum nächsten gehen
+        if distance < self.speed:  # Wenn Distanz kleiner Geschwindigkeit ist, zum nächsten Wegpunkt gehen
             self.current_waypoint += 1
-            if self.current_waypoint >= len(self.waypoints):  # Wenn der enemy  nahe am Waypoint  ist, zum nächsten gehen
+            if self.current_waypoint >= len(self.waypoints):
                 self.current_waypoint = 0
-        else:  # Wenn der enemy  nicht nahe am Waypoint  ist, bewege dich darauf zu
+        else:  # Wenn Enemy nicht nahe am Waypoint ist, bewege dich darauf zu
             self.rect.x += dx / distance * self.speed
             self.rect.y += dy / distance * self.speed
         
         if self.enemy_health == 0:
             self.kill()
-            Enemy.killed_enemies += 1  # Erhöht die Anzahl der getöteten enemies
+            Enemy.killed_enemies += 1  # Erhöht die Anzahl der getöteten Enemies
             if Enemy.killed_enemies % 20 == 0:
                 Enemy.current_image_index = (Enemy.current_image_index + 1) % len(self.images)
                 
@@ -239,35 +234,40 @@ class Enemy(pygame.sprite.Sprite):
             killed_score += 1
         if self.rect.topleft == waypoints[-1]:
             self.kill()
-            health -= 10  # Verringert die health um 10. Dies deutet darauf hin, dass das Erreichen des Zielbereichs(route vollendet) durch das enemy zu einer Strafe in Form von health abnahme führt.
+            health -= 10  
+            """
+            Verringert die health um 10. Dies deutet darauf hin, dass das Erreichen des Zielbereichs(route vollendet) 
+            durch das enemy zu einer Strafe in Form von health abnahme führt.
+            """
 
             if health == 0:
                 show_end_screen()
 
             
 
-#  Definiere die Button-Klasse
+
 def show_end_screen(): 
-    #stoppt die Hintergrundmusik.
-    pygame.mixer.music.stop()
+    pygame.mixer.music.stop() #stoppt die Hintergrundmusik
     end_sound = pygame.mixer.Sound('sound/level-failed.mp3')
-    end_sound.play()#spielt den Soundeffekt der spiel ende  ab.
+    end_sound.play()#spielt den Soundeffekt der Spielendes ab.
     end_image = pygame.image.load('img/wolfwin.jpg')
     end_image = pygame.transform.scale(end_image, (800, 600))
-    screen.blit(end_image, (0, 0))#game over bild zeigen
+    screen.blit(end_image, (0, 0))#Game over Bild zeigen
     font = pygame.font.Font(None, 36)
-    text = font.render("Game Over!! You Suck!!", True, (255, 0, 0))#erstellt den Text mit roter Farbe.
+    text = font.render("Game Over!! You Suck!!", True, (255, 0, 0))#Erstellt den Text mit roter Farbe.
     screen.blit(text, (230, 570))# Position des Textes auf dem Bildschirm.
 
 
 
-    pygame.display.flip()#bildschirm aktuliesrieren
+    pygame.display.flip()#Bildschirm aktualisieren
 
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 #sys.exit()
+
+#Button Klasse definieren               
 class Button:
     def __init__(self, image, x, y, width, height, text=''):
         self.image = pygame.image.load(f'img/{image}')
@@ -278,7 +278,7 @@ class Button:
         self.text = text
 
     def draw(self, screen, outline=None):
-        # button auf das bildschirm erscheinen lassen
+        # Button auf dem Bildschirm erscheinen lassen
         if outline:
             pygame.draw.rect(screen, outline, (self.x-2, self.y-2, self.width+4, self.height+4), 0)
         screen.blit(self.image, (self.x, self.y))
@@ -286,10 +286,10 @@ class Button:
         if self.text != '':
             font = pygame.font.SysFont('comicsans', 50)
             text = font.render(self.text, 1, (0,0,0))
-            screen.blit(text, (self.x + (self.width/2 - text.get_width()/2), self.y + (self.height/2 - text.get_height()/2)))#text in der mitte des button platzieren
+            screen.blit(text, (self.x + (self.width/2 - text.get_width()/2), self.y + (self.height/2 - text.get_height()/2)))#Text in der Mitte des Buttons platzieren
             
     def clicked(self, pos):
-        #  prüfen, ob die Mausposition innerhalb der Begrenzungen des Buttons liegt, und geben True zurück, wenn ja, andernfalls False
+        #  prüfen, ob die Mausposition innerhalb der Begrenzungen des Buttons lieg
         if self.x < pos[0] < self.x + self.width:
             if self.y < pos[1] < self.y + self.height:
                 return True
@@ -302,11 +302,11 @@ button = Button('start.png', WIDTH - MENU_WIDTH + 50, 50, 100, 50, '')
 running = True
 game_started = True
 countdown = 3  # Countdown für 3 Sekunden 
-font = pygame.font.Font(None, 74)  # größe des zahl für countdown
-#health bar breite und höhe werden bestimmt, health bar  dient als Maßstab dafür, wie viele Feinde der Jäger nicht getötet hat.
+font = pygame.font.Font(None, 74)  # Größe der Zahl für den Countdown
+#Höhe und Breite der Healthbar bestimmen
 HEALTH_BAR_WIDTH = 150
 HEALTH_BAR_HEIGHT = 20
-health_bar_x = WIDTH - MENU_WIDTH + (MENU_WIDTH - HEALTH_BAR_WIDTH) // 2  # health bar im munü platzieren
+health_bar_x = WIDTH - MENU_WIDTH + (MENU_WIDTH - HEALTH_BAR_WIDTH) // 2  # Healthbar im Menü platzieren
 health_bar_y = 100   
 enemies_created = False
 last_enemy_creation_time = 0
@@ -314,12 +314,12 @@ score_font = pygame.font.Font(None, 36)
 
 # Hier werden die Variablen für die Anzahl der platzierten hunters (towers_placed) und die Anzahl der Credits (credits) initialisiert.
 towers_placed = 0
-credits = 0  # start mit 0 credits
+credits = 0  # Start mit 0 credits
 font = pygame.font.Font(None, 36)
 previous_enemy_count = len(enemies)#
 show_intro_screen()
-pygame.mixer.music.load('sound/theme.mp3')#Lädt die Hintergrundmusik
-pygame.mixer.music.play(-1)  # musik theme wird unendlich wiederholt
+pygame.mixer.music.load('sound/theme.mp3') #Lädt die Hintergrundmusik
+pygame.mixer.music.play(-1)  #Musik wird unendlich wiederholt
 
 while running:
     
@@ -355,10 +355,10 @@ while running:
     if game_started:
             if countdown > 0:
                 countdown -= 1/FPS  # Verringere den Countdown um 1 jede Sekunde
-                health_bar_width = (1 - countdown / 3) * HEALTH_BAR_WIDTH  # The health bar ffüllt sich während des Countdowns
-                pygame.draw.rect(screen, (255, 255, 255), pygame.Rect(health_bar_x, health_bar_y, health_bar_width, HEALTH_BAR_HEIGHT))  # health bar in weiß
+                health_bar_width = (1 - countdown / 3) * HEALTH_BAR_WIDTH  # Die Healthbar füllt sich während des Countdowns
+                pygame.draw.rect(screen, (255, 255, 255), pygame.Rect(health_bar_x, health_bar_y, health_bar_width, HEALTH_BAR_HEIGHT))  #Healthbar in weiß anzeigen
             else:
-                pygame.draw.rect(screen, (150, 0, 0), pygame.Rect(health_bar_x, health_bar_y, health, HEALTH_BAR_HEIGHT))  # health bar in Rot zeigen
+                pygame.draw.rect(screen, (150, 0, 0), pygame.Rect(health_bar_x, health_bar_y, health, HEALTH_BAR_HEIGHT))  # Healthbar in Rot anzeigen
 
                 current_time = pygame.time.get_ticks()
                 if current_time - last_enemy_creation_time >= 1000:  # 1000 milliseconds = 1 second
@@ -366,9 +366,9 @@ while running:
                     e = Enemy(waypoints)
                     all_sprites.add(e)
                     enemies.add(e)
-                    last_enemy_creation_time = current_time#Aktualisiert den Zeitpunkt der letzten Feinderstellung
+                    last_enemy_creation_time = current_time #Aktualisiert den Zeitpunkt der letzten Feinderstellung
             
-    MENU_WIDTH = 200  # breite des panel
+    MENU_WIDTH = 200  # Breite des panel
 
 
     # Update
@@ -396,7 +396,7 @@ while running:
         screen.blit(countdown_text, ((WIDTH - countdown_text.get_width()) // 2, (HEIGHT - countdown_text.get_height()) // 2))  
         # Zeichne den Countdown in der Mitte des Bildschirms
 
-    draw_score()  # score erscheien lassen
+    draw_score()  # Score anzeigen
     text = font.render(f"Credits: {credits}", True, (255, 255, 255))
     screen.blit(text, (640, 210))#  Zeichne den Text "Credits" auf den Bildschirm
 
