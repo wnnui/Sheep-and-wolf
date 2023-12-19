@@ -15,12 +15,12 @@ sound.set_volume(0.5)  # 50% volumen
 game_over_image = pygame.image.load('img/wolfwin.jpg')
 
 # Attribute für die Anzeige der score werden definiert
-score_color = (255, 255, 255)  # White color
+score_color = (255, 255, 255)  # weiße farbe für score
 score_start_size = 36 # schrifft größe am anfang
 score_end_size = 48 # scheifft größe am ende 
 score_duration = 0.5  # Dauer der Animation in Sekunden
 
-# Define the score animation attributes
+# attribute des scores
 score_size = score_start_size
 score_time = 0
 
@@ -56,10 +56,10 @@ def draw_score():
     # score wort wird gerendert 
     score_text = score_font.render(f"Score: {Enemy.score}", True, score_color)
 
-    # rechteck wird erstellt
+    #rect wird erstellt
     score_area = pygame.Rect(score_pos, score_text.get_size())
 
-    # den rechteck als hintergrund für die score
+    # den rect als hintergrund für die score
     pygame.draw.rect(screen, score_bg_color, score_area)
 
     # den score auf dem bildenschirm zeigen
@@ -109,11 +109,11 @@ class Bullet(pygame.sprite.Sprite):
         self.target = target
         self.speed = 15  # Geschwindigkeit der enemies anpassbar
 
-        # 
+        
         #Wölfe in der Range der hunter werden attakiert 
         dx, dy = self.target.rect.centerx - self.rect.centerx, self.target.rect.centery - self.rect.centery
         dist = math.hypot(dx, dy)
-        self.dx, self.dy = dx / dist, dy / dist  # 
+        self.dx, self.dy = dx / dist, dy / dist   
         self.pos = list(start_pos)
 
     def update(self):
@@ -124,12 +124,12 @@ class Bullet(pygame.sprite.Sprite):
 
         # Danach wird überprüft, ob der Gegner getroffen wird. Wenn ja, wird die Gesundheit des Gegners um 1 Punkt verringert und das Projektil verschwindet mit der Methode self.kill(), wenn es einen Gegner getroffen hat.
 
-        #
+        
         if pygame.sprite.spritecollide(self, enemies, False):
             self.target.enemy_health -= 1
             self.kill()
 
-#Die Klasse "Tower" repräsentiert in einem Pygame-Spiel einen Turm, der die Rolle eines Jägers übernimmt.
+#Die Klasse "Tower" repräsentiert  die Rolle eines Jägers
 # Hunter Animation 
 class Tower(pygame.sprite.Sprite):
     def __init__(self, pos):
@@ -163,7 +163,7 @@ class Tower(pygame.sprite.Sprite):
                     bullet = Bullet(self.rect.center, target)
                     bullets.add(bullet)
                     all_sprites.add(bullet)
-                    self.current_frame = (self.current_frame + 1) % 6  # Aktualisiert den aktuellen Frame zyklisch um 1 weiter.
+                    self.current_frame = (self.current_frame + 1) % 6  # Aktualisiert den aktuellen Frame  um 1 weiter.
                     self.image = self.frames[self.current_frame]#Aktualisiert das Bild des Objekts auf den neuen Frame.
                     self.last_anim = pygame.time.get_ticks()  # Setzt den Verzögerungstimer zurück, um die Zeit seit der letzten Animation zu speichern.
                 
@@ -174,9 +174,9 @@ killed_enemies = 0
 killed_score = 0
 #enemy class 
 class Enemy(pygame.sprite.Sprite):
-    score = 0  # Score als Klassenattribute machen
+    score = 0  
     killed_enemies = 0  
-    current_image_index = 0  # diese Zeile hinzufügen
+    current_image_index = 0  
 
     def __init__(self, waypoints):
         pygame.sprite.Sprite.__init__(self)
@@ -189,26 +189,26 @@ class Enemy(pygame.sprite.Sprite):
 
         self.waypoints = waypoints
         self.current_waypoint = 0
-        self.enemy_health = 1  # Diese Zeile hinzufügen
+        self.enemy_health = 1  
         self.last_image_change = pygame.time.get_ticks()
 
     def update(self):
         # Berechne die Richtung zum nächsten waypoint
         global health  # health als globale Variable deklarieren
-        
+        #  Differenz in den x- und y-Koordinaten zwischen dem aktuellen Ort des enmeys und dem nächsten Waypoint berechnen
         dx, dy = self.waypoints[self.current_waypoint][0] - self.rect.x, self.waypoints[self.current_waypoint][1] - self.rect.y
-        distance = math.sqrt(dx**2 + dy**2)
-        if distance < self.speed:  # Wenn der Feind nahe am Wegpunkt ist, zum nächsten gehen
+        distance = math.sqrt(dx**2 + dy**2)# die Entfernung zum nächsten Waypoint mit dem Satz des Pythagoras wird hier berechnet 
+        if distance < self.speed:  # Wenn der enemy  nahe am Wegpunkt ist, zum nächsten gehen
             self.current_waypoint += 1
-            if self.current_waypoint >= len(self.waypoints):  # Wenn der Feind nahe am Wegpunkt ist, zum nächsten gehen
+            if self.current_waypoint >= len(self.waypoints):  # Wenn der enemy  nahe am Waypoint  ist, zum nächsten gehen
                 self.current_waypoint = 0
-        else:  # Wenn der Feind nicht nahe am Wegpunkt ist, bewege dich darauf zu
+        else:  # Wenn der enemy  nicht nahe am Waypoint  ist, bewege dich darauf zu
             self.rect.x += dx / distance * self.speed
             self.rect.y += dy / distance * self.speed
         
         if self.enemy_health == 0:
             self.kill()
-            Enemy.killed_enemies += 1  # Erhöht die Anzahl der getöteten Feinde
+            Enemy.killed_enemies += 1  # Erhöht die Anzahl der getöteten enemies
             if Enemy.killed_enemies % 20 == 0:
                 Enemy.current_image_index = (Enemy.current_image_index + 1) % len(self.images)
                 
@@ -317,7 +317,7 @@ pygame.mixer.music.load('sound/theme.mp3')#Lädt die Hintergrundmusik
 pygame.mixer.music.play(-1)  # musik theme wird unendlich wiederholt
 
 while running:
-    # 
+    
   
 
     pygame.time.Clock().tick(FPS)
@@ -330,7 +330,7 @@ while running:
         elif event.type == pygame.MOUSEBUTTONDOWN:
             if button.clicked(pygame.mouse.get_pos()):
                 game_started = True
-            elif game_started and event.button == 1:  #  # Erlaubt nur das Platzieren von Türmen, wenn das Spiel gestartet wurde und die linke Maustaste geklickt wurde
+            elif game_started and event.button == 1:  # Erlaubt nur das Platzieren von Türmen, wenn das Spiel gestartet wurde und die linke Maustaste geklickt wurde
                 if towers_placed < 2 or credits >= 5:
                     mouse_pos = pygame.mouse.get_pos()
                     tower = Tower(mouse_pos)
@@ -340,12 +340,12 @@ while running:
                     killed_enemies = 0
                     if credits >= 5:
                         credits -= 5
-    credits = killed_enemies# # Die Anzahl der Credits wird auf die Anzahl der getöteten Feinde gesetzt
+    credits = killed_enemies#  Die Anzahl der Credits wird auf die Anzahl der getöteten Feinde gesetzt
     Enemy.score = killed_score
     menu_background = pygame.Surface((MENU_WIDTH, HEIGHT))
     menu_background.fill((128, 128, 128))  
 
-    # # Zeichnet den Menü-Hintergrund auf den Bildschirm
+    #  Zeichnet den Menü-Hintergrund auf den Bildschirm
     screen.blit(menu_background, (GAME_WIDTH, 0))                
     if game_started:
             if countdown > 0:
@@ -369,7 +369,7 @@ while running:
     # Update
     all_sprites.update()
 
-    # Draw / render
+    # Draw 
     screen.blit(background, (0, 0))
 
     all_sprites.draw(screen) # Alle Spielobjekte zeichnen
@@ -381,7 +381,7 @@ while running:
     
 
 
-    # Draw the menu area
+    
     
     # zeichne die button
     button.draw(screen)
@@ -389,7 +389,7 @@ while running:
     if game_started and countdown > 0:
         countdown_text = font.render(str(int(countdown)), True, (255, 255, 255))  #  Erstelle eine Oberfläche mit dem Countdown
         screen.blit(countdown_text, ((WIDTH - countdown_text.get_width()) // 2, (HEIGHT - countdown_text.get_height()) // 2))  
-        ## Zeichne den Countdown in der Mitte des Bildschirms
+        # Zeichne den Countdown in der Mitte des Bildschirms
 
     draw_score()  # score erscheien lassen
     text = font.render(f"Credits: {credits}", True, (255, 255, 255))
