@@ -32,7 +32,7 @@ MENU_WIDTH = 200
 health = 100
 FPS = 60
 
-# Set up assets folders
+# erleichtert den späteren zugriff auf die images 
 game_folder = os.path.dirname(__file__)
 img_folder = os.path.join(game_folder, 'img')
 
@@ -44,11 +44,11 @@ background = pygame.image.load(os.path.join(img_folder, 'background.png')).conve
 background = pygame.transform.scale(background, (GAME_WIDTH, HEIGHT))  # maße werden angepasst 
 gray_background = pygame.Surface((MENU_WIDTH, HEIGHT))  
 def draw_score():
-    # Define the score display attributes
-    score_color = (255, 255, 255)  # White color
-    score_bg_color = (0, 0, 0)  # Black color
+    # Definiere die Attribute für die Anzeige des Punktestands
+    score_color = (255, 255, 255)  # weiße farbe für das text 
+    score_bg_color = (0, 0, 0)  # hintergrunds Farbe für das Text (score), schwarz
     score_font_size = 36
-    score_pos = (650, 150)  # Top-left corner
+    score_pos = (650, 150)  # position der score auf der bildschirm 
 
     #  die Standard-Pygame-Schriftart wird verwendet
     score_font = pygame.font.Font(None, score_font_size)
@@ -83,6 +83,10 @@ def show_intro_screen():
     #Der gerenderte Text wird auf den Bildschirm gezeigt
     screen.blit(text, (230,530))#postion des satzes 
     pygame.display.flip()
+    #Wenn der Anwender eine Taste drückt oder auf die Maus klickt, wird der Startbildschirm beendet und geht zum nächsten Teil des Spiels über. Beim Schließen des Fensters wird das Spiel beendet. Das wird mit der folgenden while-Schleife realisiert:
+
+
+
 
     while True:
         for event in pygame.event.get():
@@ -94,28 +98,32 @@ def show_intro_screen():
 
 #schüsse der Hunter , sind Rot aus der Hunter Waffe
 class Bullet(pygame.sprite.Sprite):
+    #Zuerst werden die Attribute definiert. Wir haben uns für rote Projektile entschieden. 
+    #Bei den Attributen werden auch die Startposition, das Ziel und die Geschwindigkeit angegeben.
+
     def __init__(self, start_pos, target):
         super().__init__()
         self.image = pygame.Surface((5, 5))
-        self.image.fill((255, 0, 0))  # Red color
+        self.image.fill((255, 0, 0))  
         self.rect = self.image.get_rect(center=start_pos)
         self.target = target
-        self.speed = 15  # Adjust as needed
+        self.speed = 15  # Geschwindigkeit der enemies anpassbar
 
-        # Calculate the direction vector to the target
+        # 
         #Wölfe in der Range der hunter werden attakiert 
         dx, dy = self.target.rect.centerx - self.rect.centerx, self.target.rect.centery - self.rect.centery
         dist = math.hypot(dx, dy)
-        self.dx, self.dy = dx / dist, dy / dist  # Normalize
+        self.dx, self.dy = dx / dist, dy / dist  # 
         self.pos = list(start_pos)
 
     def update(self):
-         # Move towards the target
+         # hier  wird die Position des Projektils basierend auf der Geschwindigkeit und der Richtung aktualisiert.
         self.pos[0] += self.dx * self.speed
         self.pos[1] += self.dy * self.speed
         self.rect.center = self.pos  # Update the rect
 
-        # Decrease the enemy's health and delete the bullet if it has reached its target
+        # Danach wird überprüft, ob der Gegner getroffen wird. Wenn ja, wird die Gesundheit des Gegners um 1 Punkt verringert und das Projektil verschwindet mit der Methode self.kill(), wenn es einen Gegner getroffen hat.
+
         #
         if pygame.sprite.spritecollide(self, enemies, False):
             self.target.enemy_health -= 1
@@ -140,7 +148,7 @@ class Tower(pygame.sprite.Sprite):
         target = next((enemy for enemy in enemies if math.hypot(self.rect.centerx - enemy.rect.centerx, self.rect.centery - enemy.rect.centery) <= self.range), None)
 
         if target is not None:
-            #zeit wird aktulisiert wenn ein enemy in der ramnmhe eines hunters gefunden würde
+            #zeit wird aktulisiert wenn ein enemy in der range eines hunters gefunden würde
             now = pygame.time.get_ticks()
             #Überprüft, ob genügend Zeit seit der letzten Animation vergangen ist, basierend auf der Animationsverzögerung des hunters.
             if now - self.last_anim >= self.anim_delay:
@@ -341,9 +349,9 @@ while running:
             if countdown > 0:
                 countdown -= 1/FPS  # decrease the countdown by 1 every second
                 health_bar_width = (1 - countdown / 3) * HEALTH_BAR_WIDTH  # The health bar fills up during  the countdown
-                pygame.draw.rect(screen, (255, 255, 255), pygame.Rect(health_bar_x, health_bar_y, health_bar_width, HEALTH_BAR_HEIGHT))  # Draw the health bar in white
+                pygame.draw.rect(screen, (255, 255, 255), pygame.Rect(health_bar_x, health_bar_y, health_bar_width, HEALTH_BAR_HEIGHT))  # health bar in weiß
             else:
-                pygame.draw.rect(screen, (150, 0, 0), pygame.Rect(health_bar_x, health_bar_y, health, HEALTH_BAR_HEIGHT))  # Draw the health bar in red
+                pygame.draw.rect(screen, (150, 0, 0), pygame.Rect(health_bar_x, health_bar_y, health, HEALTH_BAR_HEIGHT))  # health bar in Rot zeigen
 
                 current_time = pygame.time.get_ticks()
                 if current_time - last_enemy_creation_time >= 1000:  # 1000 milliseconds = 1 second
@@ -353,7 +361,7 @@ while running:
                     enemies.add(e)
                     last_enemy_creation_time = current_time
             
-    MENU_WIDTH = 200  # Width of the menu area
+    MENU_WIDTH = 200  # breite des panel
 
 
     # Update
