@@ -129,6 +129,7 @@ class Bullet(pygame.sprite.Sprite):
             self.target.enemy_health -= 1
             self.kill()
 
+#Die Klasse "Tower" repräsentiert in einem Pygame-Spiel einen Turm, der die Rolle eines Jägers übernimmt.
 # Hunter Animation 
 class Tower(pygame.sprite.Sprite):
     def __init__(self, pos):
@@ -162,9 +163,9 @@ class Tower(pygame.sprite.Sprite):
                     bullet = Bullet(self.rect.center, target)
                     bullets.add(bullet)
                     all_sprites.add(bullet)
-                    self.current_frame = (self.current_frame + 1) % 6  # Proceed to the next frame
-                    self.image = self.frames[self.current_frame]
-                    self.last_anim = pygame.time.get_ticks()  # Reset the delay timer
+                    self.current_frame = (self.current_frame + 1) % 6  # Aktualisiert den aktuellen Frame zyklisch um 1 weiter.
+                    self.image = self.frames[self.current_frame]#Aktualisiert das Bild des Objekts auf den neuen Frame.
+                    self.last_anim = pygame.time.get_ticks()  # Setzt den Verzögerungstimer zurück, um die Zeit seit der letzten Animation zu speichern.
                 
             
 #spiel Variabelen 
@@ -217,14 +218,14 @@ class Enemy(pygame.sprite.Sprite):
             killed_score += 1
         if self.rect.topleft == waypoints[-1]:
             self.kill()
-            health -= 10  # decrease health by 10
+            health -= 10  # Verringert die health um 10. Dies deutet darauf hin, dass das Erreichen des Zielbereichs(route vollendet) durch das enemy zu einer Strafe in Form von health abnahme führt.
 
             if health == 0:
                 show_end_screen()
 
             
 
-# Define the Button class
+#  Definiere die Button-Klasse
 def show_end_screen(): 
     #stoppt die Hintergrundmusik.
     pygame.mixer.music.stop()
@@ -235,9 +236,10 @@ def show_end_screen():
     screen.blit(end_image, (0, 0))#game over bild zeigen
     font = pygame.font.Font(None, 36)
     text = font.render("Game Over!! You Suck!!", True, (255, 0, 0))#erstellt den Text mit roter Farbe.
-    screen.blit(text, (230, 570))#größe des textes
+    screen.blit(text, (230, 570))# Position des Textes auf dem Bildschirm.
 
-    pygame.display.flip()
+
+    pygame.display.flip()#bildschirm aktuliesrieren
 
     while True:
         for event in pygame.event.get():
@@ -254,7 +256,7 @@ class Button:
         self.text = text
 
     def draw(self, screen, outline=None):
-        # Call this method to draw the button on the screen
+        # button auf das bildschirm erscheinen lassen
         if outline:
             pygame.draw.rect(screen, outline, (self.x-2, self.y-2, self.width+4, self.height+4), 0)
         screen.blit(self.image, (self.x, self.y))
@@ -262,10 +264,10 @@ class Button:
         if self.text != '':
             font = pygame.font.SysFont('comicsans', 50)
             text = font.render(self.text, 1, (0,0,0))
-            screen.blit(text, (self.x + (self.width/2 - text.get_width()/2), self.y + (self.height/2 - text.get_height()/2)))
+            screen.blit(text, (self.x + (self.width/2 - text.get_width()/2), self.y + (self.height/2 - text.get_height()/2)))#text in der mitte des button platzieren
             
     def clicked(self, pos):
-        # Pos is the mouse position or a tuple of (x,y) coordinates
+        #  prüfen, ob die Mausposition innerhalb der Begrenzungen des Buttons liegt, und geben True zurück, wenn ja, andernfalls False
         if self.x < pos[0] < self.x + self.width:
             if self.y < pos[1] < self.y + self.height:
                 return True
@@ -295,17 +297,17 @@ button = Button('start.png', WIDTH - MENU_WIDTH + 50, 50, 100, 50, '')
 running = True
 game_started = True
 countdown = 3  # Countdown für 3 Sekunden 
-font = pygame.font.Font(None, 74)  # Create a Font object with the default font and a size of 74
-
+font = pygame.font.Font(None, 74)  # größe des zahl für countdown
+#health bar breite und höhe werden bestimmt, health bar  dient als Maßstab dafür, wie viele Feinde der Jäger nicht getötet hat.
 HEALTH_BAR_WIDTH = 150
 HEALTH_BAR_HEIGHT = 20
 health_bar_x = WIDTH - MENU_WIDTH + (MENU_WIDTH - HEALTH_BAR_WIDTH) // 2  # health bar im munü platzieren
-health_bar_y = 100  # 
+health_bar_y = 100   
 enemies_created = False
 last_enemy_creation_time = 0
 score_font = pygame.font.Font(None, 36)
 
-# Initialize the number of towers placed and the number of credits
+# Hier werden die Variablen für die Anzahl der platzierten hunters (towers_placed) und die Anzahl der Credits (credits) initialisiert.
 towers_placed = 0
 credits = 0  # start mit 0 credits
 font = pygame.font.Font(None, 36)
@@ -315,11 +317,11 @@ pygame.mixer.music.load('sound/theme.mp3')#Lädt die Hintergrundmusik
 pygame.mixer.music.play(-1)  # musik theme wird unendlich wiederholt
 
 while running:
-    # Keep the loop running at the right speed
+    # 
   
 
     pygame.time.Clock().tick(FPS)
-    # Process input (events)
+   
     
 
     for event in pygame.event.get():
@@ -347,19 +349,19 @@ while running:
     screen.blit(menu_background, (GAME_WIDTH, 0))                
     if game_started:
             if countdown > 0:
-                countdown -= 1/FPS  # decrease the countdown by 1 every second
-                health_bar_width = (1 - countdown / 3) * HEALTH_BAR_WIDTH  # The health bar fills up during  the countdown
+                countdown -= 1/FPS  # Verringere den Countdown um 1 jede Sekunde
+                health_bar_width = (1 - countdown / 3) * HEALTH_BAR_WIDTH  # The health bar ffüllt sich während des Countdowns
                 pygame.draw.rect(screen, (255, 255, 255), pygame.Rect(health_bar_x, health_bar_y, health_bar_width, HEALTH_BAR_HEIGHT))  # health bar in weiß
             else:
                 pygame.draw.rect(screen, (150, 0, 0), pygame.Rect(health_bar_x, health_bar_y, health, HEALTH_BAR_HEIGHT))  # health bar in Rot zeigen
 
                 current_time = pygame.time.get_ticks()
                 if current_time - last_enemy_creation_time >= 1000:  # 1000 milliseconds = 1 second
-                    # Create an enemy
+                    # Erstelle einen Feind
                     e = Enemy(waypoints)
                     all_sprites.add(e)
                     enemies.add(e)
-                    last_enemy_creation_time = current_time
+                    last_enemy_creation_time = current_time#Aktualisiert den Zeitpunkt der letzten Feinderstellung
             
     MENU_WIDTH = 200  # breite des panel
 
@@ -370,7 +372,7 @@ while running:
     # Draw / render
     screen.blit(background, (0, 0))
 
-    all_sprites.draw(screen)
+    all_sprites.draw(screen) # Alle Spielobjekte zeichnen
     #menu_background = pygame.Surface((MENU_WIDTH, HEIGHT))
     #menu_background.fill((128, 128, 128))  # Fill with gray color
 
@@ -381,17 +383,19 @@ while running:
 
     # Draw the menu area
     
-    # Draw the button
+    # zeichne die button
     button.draw(screen)
 
     if game_started and countdown > 0:
-        countdown_text = font.render(str(int(countdown)), True, (255, 255, 255))  # Create a surface with the countdown
-        screen.blit(countdown_text, ((WIDTH - countdown_text.get_width()) // 2, (HEIGHT - countdown_text.get_height()) // 2))  # Draw the countdown in the middle of the screen
-    draw_score()  # Draw the score
-    text = font.render(f"Credits: {credits}", True, (255, 255, 255))
-    screen.blit(text, (640, 210))
+        countdown_text = font.render(str(int(countdown)), True, (255, 255, 255))  #  Erstelle eine Oberfläche mit dem Countdown
+        screen.blit(countdown_text, ((WIDTH - countdown_text.get_width()) // 2, (HEIGHT - countdown_text.get_height()) // 2))  
+        ## Zeichne den Countdown in der Mitte des Bildschirms
 
-    # After drawing everything, flip the display
+    draw_score()  # score erscheien lassen
+    text = font.render(f"Credits: {credits}", True, (255, 255, 255))
+    screen.blit(text, (640, 210))#  Zeichne den Text "Credits" auf den Bildschirm
+
+    # Umschaltet den Bildschirm, um die gezeichneten Änderungen anzuzeigen.
     pygame.display.flip()
 
 pygame.quit()
